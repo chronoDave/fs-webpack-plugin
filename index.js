@@ -16,29 +16,41 @@ module.exports = class FsWebpackPlugin {
 
     if (remove) {
       this.remove = toArray(remove)
-        .map(pattern => glob.sync(pattern));
+        .map(pattern => glob.sync(pattern, { absolute: true }))
+        .flat();
     }
 
     if (copy) {
       this.copy = toArray(copy)
-        .map(({ files, to }) => ({
-          files: glob.sync(files),
-          to: path.resolve(process.cwd(), to)
-        }));
+        .map(pattern => glob
+          .sync(pattern.files, { absolute: true })
+          .map(file => ({
+            file,
+            to: path.resolve(
+              process.cwd(),
+              pattern.to,
+              file.split('/').pop()
+            )
+          })))
+        .flat();
     }
+  }
+
+  actionRemove() {
+    this.remove.forEach(file => fse.removeSync(file));
+    console.log(`Removed file(s): \n - ${this.remove.join('\n - ')}`);
+  }
+
+  actionCopy() {
+    this.copy.forEach(({ file, to }) => fse.copyFileSync(file, to));
+    console.log(`Copied file(s): \n - ${this.copy.map(({ file, to }) => `${file} => ${to}`).join('\n - ')}`);
   }
 
   apply(compiler) {
     compiler.hooks.beforeRun.tap('FsWebpackPlugin', () => {
       try {
-        if (this.remove) {
-          this.remove.forEach(file => fse.removeSync(file));
-          console.log(`Removed files: ${this.remove}`);
-        }
-        if (this.copy) {
-          this.copy.forEach(({ files, to }) => fse.copyFileSync(files, to));
-          console.log(`Copied files: ${JSON.stringify(this.copy)}`);
-        }
+        if (this.remove) this.actionRemove();
+        if (this.copy) this.actionCopy();
       } catch (err) {
         console.error(err);
       }
