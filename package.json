@@ -1,0 +1,18 @@
+{
+  "name": "fs-webpack-plugin",
+  "version": "0.0.1",
+  "repository": "https://github.com/chronoDave/fs-webpack-plugin.git",
+  "author": "Chronocide",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "fast-glob": "^3.2.4",
+    "fs-extra": "^9.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "tape": "^5.0.1"
+  }
+}
