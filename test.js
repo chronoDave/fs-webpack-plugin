@@ -1,18 +1,25 @@
-const test = require('tape');
+const tape = require('tape');
 const fse = require('fs-extra');
+const path = require('path');
 
 const FsWebpackPlugin = require('./index');
 
 const mockCompiler = {
   hooks: {
-    beforeRun: {
-      tap: (_, func) => func()
-    }
+    beforeRun: { tap: (_, func) => func() },
+    watchRun: { tapPromise: (_, func) => func() }
   }
 };
+const root = path.resolve(__dirname, 'test');
+const files = [
+  path.resolve(root, 'test_1.txt'),
+  path.resolve(root, 'test_2.txt'),
+  path.resolve(root, 'test_3.txt')
+];
 
-// Shouldn't crash nor do anything
-test('No options', t => {
+const sleep = t => new Promise(resolve => setTimeout(resolve, t));
+
+tape('Should not crash with no parameters', t => {
   try {
     const plugin = new FsWebpackPlugin();
     plugin.apply(mockCompiler);
@@ -23,72 +30,71 @@ test('No options', t => {
   t.end();
 });
 
-// Should remove files
-test('Remove', t => {
-  // Regular file
+tape('Should delete files', async t => {
   try {
-    fse.createFileSync('test.txt');
+    fse.mkdirpSync(root);
+    for (let i = 0; i < files.length; i += 1) fse.writeFileSync(files[i], i);
 
-    const plugin = new FsWebpackPlugin({ remove: 'test.txt' });
+    const plugin = new FsWebpackPlugin([
+      { type: 'delete', files: 'test/**/*' }
+    ], false);
     plugin.apply(mockCompiler);
 
-    t.false(fse.existsSync('test.txt'));
+    for (let i = 0; i < files.length; i += 1) t.false(fse.existsSync(files[i]));
   } catch (err) {
     t.end(err);
   }
 
-  // Nested glob
-  try {
-    fse.mkdirpSync('test');
-    fse.createFileSync('test/test.txt');
+  fse.removeSync(root);
 
-    const plugin = new FsWebpackPlugin({ remove: ['test/**/*'] });
-    plugin.apply(mockCompiler);
-
-    t.false(fse.existsSync('test/test.txt'));
-
-    fse.removeSync('test');
-  } catch (err) {
-    t.end(err);
-  }
+  await sleep(10);
 
   t.end();
 });
 
-// Should copy files
-test('Copy', t => {
-  // Regular file
+tape('Should copy files', async t => {
   try {
-    fse.createFileSync('test.txt');
-    fse.mkdirpSync('test');
+    fse.mkdirpSync(root);
+    for (let i = 0; i < files.length; i += 1) fse.writeFileSync(files[i], i);
 
-    const plugin = new FsWebpackPlugin({ copy: { files: 'test.txt', to: 'test' } });
+    const plugin = new FsWebpackPlugin([
+      { type: 'copy', files: 'test/**/*', to: 'test/copy' }
+    ], false);
     plugin.apply(mockCompiler);
 
-    t.true(fse.existsSync('test/test.txt'));
-
-    fse.removeSync('test.txt');
-    fse.removeSync('test');
+    for (let i = 0; i < files.length; i += 1) {
+      t.true(fse.existsSync(path.resolve(root, 'copy', files[i])));
+    }
   } catch (err) {
     t.end(err);
   }
 
-  // Nested glob
-  try {
-    fse.mkdirpSync('test');
-    fse.createFileSync('test/test.txt');
-    fse.mkdirpSync('output');
+  fse.removeSync(root);
 
-    const plugin = new FsWebpackPlugin({ copy: { files: 'test/**/*', to: 'output' } });
+  await sleep(10);
+
+  t.end();
+});
+
+tape('Should chain multiple commands', async t => {
+  try {
+    fse.mkdirpSync(root);
+    for (let i = 0; i < files.length; i += 1) fse.writeFileSync(files[i], i);
+
+    const plugin = new FsWebpackPlugin([
+      { type: 'copy', files: 'test/**/*', to: 'test/copy' },
+      { type: 'delete', files: 'test/**/*' }
+    ], false);
     plugin.apply(mockCompiler);
 
-    t.true(fse.existsSync('output/test.txt'));
-
-    fse.removeSync('test');
-    fse.removeSync('output');
+    for (let i = 0; i < files.length; i += 1) t.false(fse.existsSync(files[i]));
   } catch (err) {
     t.end(err);
   }
+
+  fse.removeSync(root);
+
+  await sleep(10);
 
   t.end();
 });

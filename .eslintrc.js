@@ -1,5 +1,8 @@
 module.exports = {
   extends: 'airbnb-base',
+  settings: {
+    'import/core-modules': ['tape']
+  },
   rules: {
     // General
     'operator-linebreak': ['error', 'after'],

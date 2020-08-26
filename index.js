@@ -4,56 +4,54 @@ const path = require('path');
 
 module.exports = class FsWebpackPlugin {
   /**
-   * @param {object} options
-   * @param {string|string[]} options.remove - <Glob>
-   * @param {object|object[]} options.copy - `[{ files: <Glob>, to: <String> }]`
+   * @param {object[]} options
+   * @param {boolean} verbose - Enable logging (default `true`)
    */
-  constructor({ remove = null, copy = null } = {}) {
-    const toArray = any => (Array.isArray(any) ? any : [any]);
-
-    this.remove = null;
-    this.copy = null;
-
-    if (remove) {
-      this.remove = toArray(remove)
-        .map(pattern => glob.sync(pattern, { absolute: true }))
-        .flat();
-    }
-
-    if (copy) {
-      this.copy = toArray(copy)
-        .map(pattern => glob
-          .sync(pattern.files, { absolute: true })
-          .map(file => ({
-            file,
-            to: path.resolve(
-              process.cwd(),
-              pattern.to,
-              file.split('/').pop()
-            )
-          })))
-        .flat();
-    }
+  constructor(options = [], verbose = true) {
+    this.options = options;
+    this.verbose = verbose;
   }
 
-  actionRemove() {
-    this.remove.forEach(file => fse.removeSync(file));
-    console.log(`Removed file(s): \n - ${this.remove.join('\n - ')}`);
-  }
-
-  actionCopy() {
-    this.copy.forEach(({ file, to }) => fse.copyFileSync(file, to));
-    console.log(`Copied file(s): \n - ${this.copy.map(({ file, to }) => `${file} => ${to}`).join('\n - ')}`);
+  run() {
+    this.options.forEach(({ type, files, to }) => {
+      try {
+        switch (type) {
+          case 'delete':
+            glob
+              .sync(files, { absolute: true })
+              .forEach(file => {
+                fse.removeSync(file);
+                if (this.verbose) console.log(`Removed file: ${file}`);
+              });
+            break;
+          case 'copy':
+            glob
+              .sync(files, { absolute: true })
+              .forEach(file => {
+                const newFile = path.resolve(process.cwd(), to, file.split('/').pop());
+                let newPath = process.cwd(); // Make folder(s) if they don't exist
+                to.split('/').forEach(p => {
+                  newPath = path.resolve(newPath, p);
+                  if (p !== '..') fse.mkdirpSync(newPath);
+                });
+                fse.copyFileSync(file, newFile);
+                if (this.verbose) console.log(`Copied file: ${file} => ${newFile}`);
+              });
+            break;
+          default:
+            console.error(`Invalid type: ${type}`);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    });
   }
 
   apply(compiler) {
-    compiler.hooks.beforeRun.tap('FsWebpackPlugin', () => {
-      try {
-        if (this.remove) this.actionRemove();
-        if (this.copy) this.actionCopy();
-      } catch (err) {
-        console.error(err);
-      }
+    compiler.hooks.beforeRun.tap('FsWebpackPlugin', () => this.run());
+    compiler.hooks.watchRun.tapPromise('FsWebpackPlugin', () => {
+      this.run();
+      return Promise.resolve();
     });
   }
 };

@@ -15,7 +15,7 @@ Both `copy-webpack-plugin` and `clean-webpack-plugin` have far too many depedenc
 
 ## Usage
 
-`fs-webpack-plugin` is ran before compilation, and `remove` before `copy`.
+`fs-webpack-plugin` is ran before compilation.
 
 <b>webpack.config.js</b>
 
@@ -24,17 +24,10 @@ const FsWebpackPlugin = require('fs-webpack-plugin');
 
 module.exports = {
   plugins: [
-    new FsWebpackPlugin({
-      remove: ['build/**'],
-      copy: [{ files: 'src/**', to: 'build' }]
-    })
+    new FsWebpackPlugin([
+      { type: 'delete', files: 'build/**/*' },
+      { type: 'copy', files: 'assets/**/*', to: 'build' }
+    ])
   ]
 }
 ```
-
-## Options
-
-`remove` - Files to remove, expects glob pattern.
-`copy` - Files to copy, expects object `{ files: <Glob>, to: <String> }`
-`copy.files` - Files to copy, expects glob
-`copy.to` - Output dir of `copy.files`, expects relative path (assumes `process.cwd()` as root)
