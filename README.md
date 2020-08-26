@@ -1,5 +1,8 @@
 # fs-webpack-plugin
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![NPM](https://img.shields.io/npm/v/fs-webpack-plugin?label=npm)](https://www.npmjs.com/package/fs-webpack-plugin)
+
 `fs-webpack-plugin` adds file system methods in a webpack plugin package.
 
 Currently, it supports:
