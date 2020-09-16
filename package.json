@@ -2,6 +2,13 @@
   "name": "fs-webpack-plugin",
   "version": "2.0.1",
   "repository": "https://github.com/chronoDave/fs-webpack-plugin.git",
+  "keywords": [
+    "webpack-plugin",
+    "fs",
+    "copy",
+    "delete",
+    "clean"
+  ],
   "author": "Chronocide",
   "license": "MIT",
   "scripts": {
