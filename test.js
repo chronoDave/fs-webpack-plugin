@@ -12,13 +12,13 @@ const files = [
   path.resolve(root, 'test_3.txt')
 ];
 
-const sleep = t => new Promise(resolve => setTimeout(resolve, t));
 const promiseWebpack = options => new Promise((resolve, reject) => (
   webpack(options, (err, stats) => {
     if (err) return reject(err);
     return resolve(stats);
   })
 ));
+
 const createTestFiles = () => {
   fse.mkdirpSync(root);
   for (let i = 0; i < files.length; i += 1) fse.writeFileSync(files[i], i);
@@ -60,7 +60,6 @@ tape('Should delete files', async t => {
   }
 
   fse.removeSync(root);
-  await sleep(10);
 
   t.end();
 });
@@ -86,7 +85,6 @@ tape('Should copy files', async t => {
   }
 
   fse.removeSync(root);
-  await sleep(10);
 
   t.end();
 });
@@ -115,7 +113,6 @@ tape('Should chain multiple commands', async t => {
   }
 
   fse.removeSync(root);
-  await sleep(10);
 
   t.end();
 });
@@ -142,7 +139,6 @@ tape('Should accept root option', async t => {
   }
 
   fse.removeSync(root);
-  await sleep(10);
 
   t.end();
 });
