@@ -21,7 +21,7 @@ const promiseWebpack = options => new Promise((resolve, reject) => (
 
 const createTestFiles = () => {
   for (let i = 0; i < files.length; i += 1) {
-    fs.mkdirSync(files[i].split('\\').slice(0, -1).join('\\'), { recursive: true });
+    fs.mkdirSync(files[i].split(path.sep).slice(0, -1).join(path.sep), { recursive: true });
     fs.writeFileSync(files[i], i);
   }
 };

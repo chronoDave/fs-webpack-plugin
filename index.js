@@ -71,10 +71,10 @@ module.exports = class FsWebpackPlugin {
           glob
             .sync(files, { absolute: true, cwd: root })
             .forEach(file => {
-              const newFile = path.resolve(root, to, file.split('/').pop());
+              const newFile = path.resolve(root, to, file.split(path.sep).pop());
 
               let newPath = root;
-              to.split('/').forEach(p => {
+              to.split(path.sep).forEach(p => {
                 newPath = path.resolve(newPath, p);
                 if (p !== '..') fs.mkdirSync(newPath, { recursive: true });
               });
