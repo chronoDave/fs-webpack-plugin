@@ -1,5 +1,5 @@
 const tape = require('tape');
-const fse = require('fs-extra');
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 
@@ -8,8 +8,8 @@ const FsWebpackPlugin = require('./index');
 const root = path.resolve(__dirname, 'test');
 const files = [
   path.resolve(root, 'test_1.txt'),
-  path.resolve(root, 'test_2.txt'),
-  path.resolve(root, 'test_3.txt')
+  path.resolve(root, 'nested/test_2.txt'),
+  path.resolve(root, 'deeply/nested/test_3.txt')
 ];
 
 const promiseWebpack = options => new Promise((resolve, reject) => (
@@ -20,8 +20,10 @@ const promiseWebpack = options => new Promise((resolve, reject) => (
 ));
 
 const createTestFiles = () => {
-  fse.mkdirpSync(root);
-  for (let i = 0; i < files.length; i += 1) fse.writeFileSync(files[i], i);
+  for (let i = 0; i < files.length; i += 1) {
+    fs.mkdirSync(files[i].split('\\').slice(0, -1).join('\\'), { recursive: true });
+    fs.writeFileSync(files[i], i);
+  }
 };
 
 tape('Should not throw with no parameters', async t => {
@@ -54,12 +56,12 @@ tape('Should delete files', async t => {
       }])]
     });
 
-    for (let i = 0; i < files.length; i += 1) t.false(fse.existsSync(files[i]));
+    for (let i = 0; i < files.length; i += 1) t.false(fs.existsSync(files[i]));
   } catch (err) {
     t.fail(err.message);
   }
 
-  fse.removeSync(root);
+  fs.rmdirSync(root, { recursive: true });
 
   t.end();
 });
@@ -78,13 +80,13 @@ tape('Should copy files', async t => {
     });
 
     for (let i = 0; i < files.length; i += 1) {
-      t.true(fse.existsSync(path.resolve(root, 'copy', files[i])));
+      t.true(fs.existsSync(path.resolve(root, 'copy', files[i])));
     }
   } catch (err) {
     t.fail(err.message);
   }
 
-  fse.removeSync(root);
+  fs.rmdirSync(root, { recursive: true });
 
   t.end();
 });
@@ -107,12 +109,12 @@ tape('Should chain multiple commands', async t => {
       ])]
     });
 
-    for (let i = 0; i < files.length; i += 1) t.false(fse.existsSync(files[i]));
+    for (let i = 0; i < files.length; i += 1) t.false(fs.existsSync(files[i]));
   } catch (err) {
     t.fail(err.message);
   }
 
-  fse.removeSync(root);
+  fs.rmdirSync(root, { recursive: true });
 
   t.end();
 });
@@ -132,13 +134,13 @@ tape('Should accept root option', async t => {
     });
 
     for (let i = 0; i < files.length; i += 1) {
-      t.true(fse.existsSync(path.resolve(root, 'copy', files[i])));
+      t.true(fs.existsSync(path.resolve(root, 'copy', files[i])));
     }
   } catch (err) {
     t.fail(err.message);
   }
 
-  fse.removeSync(root);
+  fs.rmdirSync(root, { recursive: true });
 
   t.end();
 });

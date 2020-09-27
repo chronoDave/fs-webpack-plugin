@@ -1,4 +1,4 @@
-const fse = require('fs-extra');
+const fs = require('fs');
 const glob = require('fast-glob');
 const path = require('path');
 
@@ -63,7 +63,7 @@ module.exports = class FsWebpackPlugin {
           glob
             .sync(files, { absolute: true, cwd: root })
             .forEach(file => {
-              fse.removeSync(file);
+              fs.unlinkSync(file);
               if (this.verbose) logger.info(`Removed file: ${file}`);
             });
           break;
@@ -76,10 +76,10 @@ module.exports = class FsWebpackPlugin {
               let newPath = root;
               to.split('/').forEach(p => {
                 newPath = path.resolve(newPath, p);
-                if (p !== '..') fse.mkdirpSync(newPath);
+                if (p !== '..') fs.mkdirSync(newPath, { recursive: true });
               });
 
-              fse.copyFileSync(file, newFile);
+              fs.copyFileSync(file, newFile);
               if (this.verbose) logger.info(`Copied file: ${file} => ${newFile}`);
             });
           break;

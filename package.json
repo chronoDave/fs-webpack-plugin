@@ -11,15 +11,17 @@
   ],
   "author": "Chronocide",
   "license": "MIT",
+  "engines": {
+    "node": ">=10.12.0"
+  },
   "scripts": {
-    "test": "tape test.js",
+    "test": "tape index.test.js",
     "bump:patch": "yarn version --patch && git push -u origin master --tags && yarn publish",
     "bump:minor": "yarn version --minor && git push -u origin master --tags && yarn publish",
     "bump:major": "yarn version --major && git push -u origin master --tags && yarn publish"
   },
   "dependencies": {
-    "fast-glob": "^3.2.4",
-    "fs-extra": "^9.0.1"
+    "fast-glob": "^3.2.4"
   },
   "devDependencies": {
     "eslint": "^7.7.0",
