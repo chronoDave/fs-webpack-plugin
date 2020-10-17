@@ -9,11 +9,17 @@ jobs:
     - stage: test
       script: yarn test
     - stage: patch
-      script: ./publish.sh patch
+      script:
+        - chmod +x publish.sh
+        - ./publish.sh patch
     - stage: minor
-      script: ./publish.sh minor
+      script:
+        - chmod +x publish.sh
+        - ./publish.sh minor
     - stage: major
-      script: ./publish.sh major
+      script:
+        - chmod +x publish.sh
+        - ./publish.sh major
 
 stages:
   - name: test
