@@ -48,11 +48,12 @@ module.exports = {
  - `options (Object)` - Options
  - `options.verbose (Boolean)` - Enable logging (default `false`)
  - `options.strict (Boolean)` - Should throw errors instead of logging them (default `false`)
+ - `options.dry (Boolean)` - Enable mocking (default `false`). Please note that `options.dry` will not output to console if `options.verbose` is `false`
 
 `Action`
 
  - `type (String)` - Action type, must be one of `copy`, `delete`
- - `files (String)` - Files [glob](https://en.wikipedia.org/wiki/Glob_(programming))
+ - `files (String)` - Files [glob](https://en.wikipedia.org/wiki/Glob_(programming)). If `type` is `delete` and `files` is `falsy`, `delete` will remove all files in `root` recursively. Defaults to `**/*`
  - `to (String)` - Output directory (used by `copy`)
  - `root (String)` - `files` glob root, defaults to `process.cwd()`
- - `hooks (String[])` - Webpack [hooks](https://webpack.js.org/api/compiler-hooks/#hooks) to run action at
+ - `hooks (String[])` - Webpack [hooks](https://webpack.js.org/api/compiler-hooks/#hooks) to run action on, defaults to `['beforeRun']`

@@ -6,13 +6,11 @@ module.exports = class FsWebpackPlugin {
   /**
    * @param {object[]} actions
    * @param {object} options
+   * @param {boolean} options.verbose - Should log to console (default `false`)
    * @param {boolean} options.strict - Should throw error (default `false`)
+   * @param {boolean} options.dry - Should mock actions (default `false`)
    */
-  constructor(actions = [], { verbose = false, strict = false } = {}) {
-    this.actions = actions;
-    this.strict = strict;
-    this.verbose = verbose;
-
+  constructor(actions = [], { verbose = false, dry = false, strict = false } = {}) {
     this.name = 'FsWebpackPlugin';
     this.syncHooks = [
       'entryOption',
@@ -46,6 +44,19 @@ module.exports = class FsWebpackPlugin {
       'assetEmitted',
       'done'
     ];
+
+    this.actions = actions;
+    this.strict = strict;
+    this.verbose = verbose;
+    this.dry = dry;
+
+    this.logger = null;
+  }
+
+  handleErr(message) {
+    const err = new Error(message);
+    if (this.strict) throw err;
+    this.logger.error(err);
   }
 
   /**
@@ -56,16 +67,21 @@ module.exports = class FsWebpackPlugin {
    * @param {string} action.root - Glob root
    * @param {object} logger - Webpack logger
    */
-  run({ type, files, to, root = process.cwd() }, logger) {
+  run({ type, files = '**/*', to, root = process.cwd() }) {
     try {
       switch (type) {
         case 'delete':
-          glob
-            .sync(files, { absolute: true, cwd: root })
-            .forEach(file => {
-              fs.unlinkSync(file);
-              if (this.verbose) logger.info(`Removed file: ${file}`);
-            });
+          if (!files) {
+            if (!this.dry) fs.rmdirSync(root, { recursive: true });
+            if (this.verbose) this.logger.info(`Removed folder: ${root}`);
+          } else {
+            glob
+              .sync(files, { absolute: true, cwd: root })
+              .forEach(file => {
+                if (!this.dry) fs.unlinkSync(file);
+                if (this.verbose) this.logger.info(`Removed file: ${file}`);
+              });
+          }
           break;
         case 'copy':
           glob
@@ -76,56 +92,57 @@ module.exports = class FsWebpackPlugin {
               let newPath = root;
               to.split(path.sep).forEach(p => {
                 newPath = path.resolve(newPath, p);
-                if (p !== '..') fs.mkdirSync(newPath, { recursive: true });
+                if (p !== '..' && !this.dry) fs.mkdirSync(newPath, { recursive: true });
               });
 
-              fs.copyFileSync(file, newFile);
-              if (this.verbose) logger.info(`Copied file: ${file} => ${newFile}`);
+              if (!this.dry) fs.copyFileSync(file, newFile);
+              if (this.verbose) this.logger.info(`Copied file: ${file} => ${newFile}`);
             });
           break;
-        default: {
-          const error = new Error(`Invalid type: ${type}`);
-          if (this.strict) throw error;
-          logger.error(error);
-        }
+        default:
+          this.handleErr(`Invalid type: ${type}`);
       }
     } catch (err) {
-      if (this.strict) throw err;
-      console.error(err);
+      this.handleErr(err.message);
     }
 
     return Promise.resolve();
   }
 
+  /**
+   * @param {object} action
+   * @param {string} action.type - Action type
+   * @param {string} action.files - Files glob
+   * @param {string} action.to - Output folder
+   * @param {string} action.root - Glob root
+   * @param {function} cb - Callback
+   */
+  validate(action, cb) {
+    if (typeof action !== 'object') return this.handleErr(`Action must be an object: ${action}`);
+    if (!action.type) return this.handleErr(`Action must have a type: ${action}`);
+    return cb({ hooks: ['beforeRun'], ...action });
+  }
+
   apply(compiler) {
-    const logger = compiler.getInfrastructureLogger(this.name);
+    this.logger = compiler.getInfrastructureLogger(this.name);
 
     for (let i = 0; i < this.actions.length; i += 1) {
-      const action = this.actions[i];
-
-      if (!action.hooks || !Array.isArray(action.hooks)) {
-        const error = new Error(`Invalid hooks: ${action.hooks}`);
-        if (this.strict) throw error;
-        logger.error(error);
-      } else {
+      this.validate(this.actions[i], action => {
         for (let j = 0; j < action.hooks.length; j += 1) {
           const hook = action.hooks[j];
 
           switch (true) {
             case this.syncHooks.includes(hook):
-              compiler.hooks[hook].tap(this.name, () => this.run(action, logger));
+              compiler.hooks[hook].tap(this.name, () => this.run(action));
               break;
             case this.asyncHooks.includes(hook):
-              compiler.hooks[hook].tapPromise(this.name, () => this.run(action, logger));
+              compiler.hooks[hook].tapPromise(this.name, () => this.run(action));
               break;
-            default: {
-              const error = new Error(`Invalid hook: ${hook}`);
-              if (this.strict) throw error;
-              logger.error(error);
-            }
+            default:
+              this.handleErr(`Invalid hook: ${hook}`);
           }
         }
-      }
+      });
     }
   }
 };

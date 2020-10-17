@@ -26,6 +26,7 @@ const createTestFiles = () => {
   }
 };
 
+/** Constructor */
 tape('Should not throw with no parameters', async t => {
   try {
     await promiseWebpack({ plugins: [new FsWebpackPlugin()] });
@@ -44,16 +45,13 @@ tape('Should throw if strict is enabled', async t => {
   }
 });
 
+/** Delete */
 tape('Should delete files', async t => {
   try {
     createTestFiles();
 
     await promiseWebpack({
-      plugins: [new FsWebpackPlugin([{
-        type: 'delete',
-        files: 'test/**/*',
-        hooks: ['beforeRun']
-      }])]
+      plugins: [new FsWebpackPlugin([{ type: 'delete', root: 'test' }])]
     });
 
     for (let i = 0; i < files.length; i += 1) t.false(fs.existsSync(files[i]));
@@ -66,6 +64,72 @@ tape('Should delete files', async t => {
   t.end();
 });
 
+tape('Should mock delete files if `dry` is true', async t => {
+  try {
+    createTestFiles();
+
+    await promiseWebpack({
+      plugins: [new FsWebpackPlugin(
+        [{ type: 'delete', root: 'test' }],
+        { dry: true }
+      )]
+    });
+
+    for (let i = 0; i < files.length; i += 1) t.true(fs.existsSync(files[i]));
+  } catch (err) {
+    t.fail(err.message);
+  }
+
+  fs.rmdirSync(root, { recursive: true });
+
+  t.end();
+});
+
+tape('Should delete folders', async t => {
+  try {
+    createTestFiles();
+
+    await promiseWebpack({
+      plugins: [new FsWebpackPlugin([{
+        type: 'delete',
+        root: 'test',
+        files: false
+      }])]
+    });
+
+    t.false(fs.existsSync('test'));
+  } catch (err) {
+    t.fail(err.message);
+  }
+
+  fs.rmdirSync(root, { recursive: true });
+
+  t.end();
+});
+
+tape('Should mock delete folders if `dry` is true', async t => {
+  try {
+    createTestFiles();
+
+    await promiseWebpack({
+      plugins: [new FsWebpackPlugin([{
+        type: 'delete',
+        root: 'test',
+        files: false
+      }], { dry: true })]
+    });
+
+    t.true(fs.existsSync('test'));
+  } catch (err) {
+    t.fail(err.message);
+  }
+
+  fs.rmdirSync(root, { recursive: true });
+
+  t.end();
+});
+
+/** Copy */
 tape('Should copy files', async t => {
   try {
     createTestFiles();
@@ -74,8 +138,7 @@ tape('Should copy files', async t => {
       plugins: [new FsWebpackPlugin([{
         type: 'copy',
         files: 'test/**/*',
-        to: 'test/copy',
-        hooks: ['beforeRun']
+        to: 'test/copy'
       }])]
     });
 
@@ -91,6 +154,29 @@ tape('Should copy files', async t => {
   t.end();
 });
 
+tape('Should mock copy files if `dry` is true', async t => {
+  try {
+    createTestFiles();
+
+    await promiseWebpack({
+      plugins: [new FsWebpackPlugin([{
+        type: 'copy',
+        files: 'test/**/*',
+        to: 'test/copy'
+      }], { dry: true })]
+    });
+
+    t.false(fs.existsSync(path.resolve(root, 'copy')));
+  } catch (err) {
+    t.fail(err.message);
+  }
+
+  fs.rmdirSync(root, { recursive: true });
+
+  t.end();
+});
+
+/** Chain */
 tape('Should chain multiple commands', async t => {
   try {
     createTestFiles();
@@ -99,43 +185,14 @@ tape('Should chain multiple commands', async t => {
       plugins: [new FsWebpackPlugin([{
         type: 'copy',
         files: 'test/**/*',
-        to: 'test/copy',
-        hooks: ['beforeRun']
+        to: 'test/copy'
       }, {
         type: 'delete',
-        files: 'test/**/*',
-        hooks: ['beforeRun']
-      }
-      ])]
-    });
-
-    for (let i = 0; i < files.length; i += 1) t.false(fs.existsSync(files[i]));
-  } catch (err) {
-    t.fail(err.message);
-  }
-
-  fs.rmdirSync(root, { recursive: true });
-
-  t.end();
-});
-
-tape('Should accept root option', async t => {
-  try {
-    createTestFiles();
-
-    await promiseWebpack({
-      plugins: [new FsWebpackPlugin([{
-        type: 'copy',
-        files: '*',
-        to: 'copy',
-        root,
-        hooks: ['beforeRun']
+        files: 'test/**/*'
       }])]
     });
 
-    for (let i = 0; i < files.length; i += 1) {
-      t.true(fs.existsSync(path.resolve(root, 'copy', files[i])));
-    }
+    for (let i = 0; i < files.length; i += 1) t.false(fs.existsSync(files[i]));
   } catch (err) {
     t.fail(err.message);
   }

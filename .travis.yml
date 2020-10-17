@@ -4,8 +4,14 @@ node_js: lts/*
 git:
   depth: 2
 
-script:
-  - yarn test
+jobs:
+  include:
+    - stage: release
+      deploy:
+        provider: script
+        skip_cleanup: true
+        script:
+          - npx semantic-release
 
 after_success:
   - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
