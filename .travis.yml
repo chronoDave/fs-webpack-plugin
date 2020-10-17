@@ -11,15 +11,15 @@ jobs:
         - yarn test
     - stage: patch
       script:
-        - yarn version patch
+        - yarn --new-version patch
         - yarn publish
     - stage: minor
       script:
-        - yarn version minor
+        - yarn --new-version minor
         - yarn publish
     - stage: major
       script:
-        - yarn version major
+        - yarn --new-version major
         - yarn publish
 
 stages:
