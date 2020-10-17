@@ -137,13 +137,14 @@ tape('Should copy files', async t => {
     await promiseWebpack({
       plugins: [new FsWebpackPlugin([{
         type: 'copy',
+        root: __dirname,
         files: 'test/**/*',
         to: 'test/copy'
       }])]
     });
 
     for (let i = 0; i < files.length; i += 1) {
-      t.true(fs.existsSync(path.resolve(root, 'copy', files[i])));
+      t.true(fs.existsSync(path.resolve(root, 'copy', path.normalize(files[i]).split(path.sep).pop())));
     }
   } catch (err) {
     t.fail(err.message);

@@ -87,15 +87,11 @@ module.exports = class FsWebpackPlugin {
           glob
             .sync(files, { absolute: true, cwd: root })
             .forEach(file => {
-              const newFile = path.resolve(root, to, file.split(path.sep).pop());
-
-              let newPath = root;
-              to.split(path.sep).forEach(p => {
-                newPath = path.resolve(newPath, p);
-                if (p !== '..' && !this.dry) fs.mkdirSync(newPath, { recursive: true });
-              });
-
-              if (!this.dry) fs.copyFileSync(file, newFile);
+              const newFile = path.resolve(root, to, path.normalize(file).split(path.sep).pop());
+              if (!this.dry) {
+                fs.mkdirSync(path.resolve(root, to), { recursive: true });
+                fs.copyFileSync(file, newFile);
+              }
               if (this.verbose) this.logger.info(`Copied file: ${file} => ${newFile}`);
             });
           break;
