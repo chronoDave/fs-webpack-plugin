@@ -6,21 +6,18 @@ git:
 
 jobs:
   include:
-    # - stage: test
-    #   script:
-    #     - yarn test
+    - stage: test
+      script:
+        - yarn test
     - stage: patch
-      deploy:
-        provider: npm
-        api_key: $NPM_TOKEN
+      script:
+        - yarn publish --non-interactive --new-version patch
     - stage: minor
-      deploy:
-        provider: npm
-        api_key: $NPM_TOKEN
+      script:
+        - yarn publish --non-interactive --new-version minor
     - stage: major
-      deploy:
-        provider: npm
-        api_key: $NPM_TOKEN
+      script:
+        - yarn publish --non-interactive --new-version major
 
 stages:
   # - name: test
@@ -31,12 +28,12 @@ stages:
   - name: major
     if: branch = master AND commit_message =~ /(breaking|update)/
 
-# after_success:
-#   - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
-#   - chmod +x discord.sh
-#   - ./discord.sh success $WEBHOOK_URL
+after_success:
+  - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
+  - chmod +x discord.sh
+  - ./discord.sh success $WEBHOOK_URL
 
-# after_failure:
-#   - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
-#   - chmod +x discord.sh
-#   - ./discord.sh failure $WEBHOOK_URL
+after_failure:
+  - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
+  - chmod +x discord.sh
+  - ./discord.sh failure $WEBHOOK_URL
