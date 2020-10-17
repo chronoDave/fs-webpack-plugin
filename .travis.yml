@@ -12,19 +12,16 @@ jobs:
         - yarn test
     - stage: patch
       script:
-        - npm version patch
-        - git push --tags
-        - npm publish
+        - yarn version patch
+        - yarn publish
     - stage: minor
       script:
-        - npm version minor
-        - git push --tags
-        - npm publish
+        - yarn version minor
+        - yarn publish
     - stage: major
       script:
-        - npm version major
-        - git push --tags
-        - npm publish
+        - yarn version major
+        - yarn publish
 
 stages:
   - name: patch
