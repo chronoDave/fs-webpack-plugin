@@ -13,16 +13,19 @@ jobs:
       script:
         - yarn publish --non-interactive --new-version patch
         - git remote set-url origin https://${GH_TOKEN}@github.com/chronoDave/fs-webpack-plugin.git
+        - git commit -a
         - git push --tags
     - stage: minor
       script:
         - yarn publish --non-interactive --new-version minor
         - git remote set-url origin https://${GH_TOKEN}@github.com/chronoDave/fs-webpack-plugin.git
+        - git commit -a
         - git push --tags
     - stage: major
       script:
         - yarn publish --non-interactive --new-version major
         - git remote set-url origin https://${GH_TOKEN}@github.com/chronoDave/fs-webpack-plugin.git
+        - git commit -a
         - git push --tags
 
 stages:
