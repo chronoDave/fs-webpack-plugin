@@ -1,19 +1,15 @@
 language: node_js
 cache: yarn
 node_js: lts/*
+if: tag IS blank
 git:
   depth: 2
 
-jobs:
-  include:
-    - stage: release
-      deploy:
-        provider: script
-        skip_cleanup: true
-        script:
-          - npx semantic-release
+script:
+  - yarn test
 
 after_success:
+  - npx semantic-release
   - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
   - chmod +x discord.sh
   - ./discord.sh success $WEBHOOK_URL
