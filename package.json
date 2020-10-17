@@ -10,16 +10,15 @@
     "delete",
     "clean"
   ],
+  "files": ["index.js"],
+  "main": "index.js",
   "author": "Chronocide",
   "license": "MIT",
   "engines": {
-    "node": ">=10.12.0"
+    "node": ">=12.10.0"
   },
   "scripts": {
-    "test": "tape index.test.js",
-    "bump:patch": "yarn version --patch && git push -u origin master --tags && yarn publish",
-    "bump:minor": "yarn version --minor && git push -u origin master --tags && yarn publish",
-    "bump:major": "yarn version --major && git push -u origin master --tags && yarn publish"
+    "test": "tape index.test.js"
   },
   "dependencies": {
     "fast-glob": "^3.2.4"
@@ -29,6 +28,6 @@
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "tape": "^5.0.1",
-    "webpack": "^4.44.1"
+    "webpack": "^5.1.3"
   }
 }
