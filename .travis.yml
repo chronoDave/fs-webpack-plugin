@@ -11,15 +11,15 @@ jobs:
         - yarn test
     - stage: patch
       script:
-        - yarn config set authToken $NPM_TOKEN
+        - yarn config set _authToken $NPM_TOKEN
         - yarn publish --non-interactive --new-version patch
     - stage: minor
       script:
-        - yarn config set authToken $NPM_TOKEN
+        - yarn config set _authToken $NPM_TOKEN
         - yarn publish --non-interactive --new-version minor
     - stage: major
       script:
-        - yarn config set authToken $NPM_TOKEN
+        - yarn config set _authToken $NPM_TOKEN
         - yarn publish --non-interactive --new-version major
 
 stages:
