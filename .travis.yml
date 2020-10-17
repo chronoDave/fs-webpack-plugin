@@ -11,15 +11,15 @@ jobs:
     - stage: patch
       script:
         - chmod +x publish.sh
-        - ./publish.sh $NPM_TOKEN $GH_TOKEN patch
+        - ./publish.sh $GH_TOKEN patch
     - stage: minor
       script:
         - chmod +x publish.sh
-        - ./publish.sh $NPM_TOKEN $GH_TOKEN minor
+        - ./publish.sh $GH_TOKEN minor
     - stage: major
       script:
         - chmod +x publish.sh
-        - ./publish.sh $NPM_TOKEN $GH_TOKEN major
+        - ./publish.sh $GH_TOKEN major
 
 stages:
   - name: test
