@@ -3,8 +3,8 @@ cache: yarn
 node_js: lts/*
 git:
   depth: 2
-deploy:
-  github_token: $GH_TOKEN
+env:
+  - GH_URL: node -p "require('./package.json').repository"
 
 jobs:
   include:
@@ -14,14 +14,17 @@ jobs:
     - stage: patch
       script:
         - yarn publish --non-interactive --new-version patch
+        - git remote set-url origin https://${GH_TOKEN}@github.com/${GH_URL}
         - git push --tags
     - stage: minor
       script:
         - yarn publish --non-interactive --new-version minor
+        - git remote set-url origin https://${GH_TOKEN}@github.com/${GH_URL}
         - git push --tags
     - stage: major
       script:
         - yarn publish --non-interactive --new-version major
+        - git remote set-url origin https://${GH_TOKEN}@github.com/${GH_URL}
         - git push --tags
 
 stages:
