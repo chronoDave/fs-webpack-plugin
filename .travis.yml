@@ -6,20 +6,20 @@ git:
 
 jobs:
   include:
-    - stage: test
-      script:
-        - yarn test
+    # - stage: test
+    #   script:
+    #     - yarn test
     - stage: patch
       deploy:
-        provider: yarn
+        provider: npm
         api_key: $NPM_TOKEN
     - stage: minor
       deploy:
-        provider: yarn
+        provider: npm
         api_key: $NPM_TOKEN
     - stage: major
       deploy:
-        provider: yarn
+        provider: npm
         api_key: $NPM_TOKEN
 
 stages:
