@@ -3,6 +3,8 @@ cache: yarn
 node_js: lts/*
 git:
   depth: 2
+deploy:
+  github_token: $GH_TOKEN
 
 jobs:
   include:
