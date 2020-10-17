@@ -5,11 +5,36 @@ if: tag IS blank
 git:
   depth: 2
 
-script:
-  - yarn test
+jobs:
+  include:
+    - stage: test
+      script:
+        - yarn test
+    - stage: patch
+      script:
+        - npm version patch
+        - git push --tags
+        - npm publish
+    - stage: minor
+      script:
+        - npm version minor
+        - git push --tags
+        - npm publish
+    - stage: major
+      script:
+        - npm version major
+        - git push --tags
+        - npm publish
+
+stages:
+  - name: patch
+    if: branch = master AND commit_message =~ /(ci|docs|fix|deps|patch)/
+  - name: minor
+    if: branch = master AND commit_message =~ /(feat|perf|refactor|minor)/
+  - name: major
+    if: branch = master AND commit_message =~ /(breaking|update)/
 
 after_success:
-  - npx semantic-release
   - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
   - chmod +x discord.sh
   - ./discord.sh success $WEBHOOK_URL
