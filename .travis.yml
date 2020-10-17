@@ -12,12 +12,15 @@ jobs:
     - stage: patch
       script:
         - yarn publish --non-interactive --new-version patch
+        - git push --tags
     - stage: minor
       script:
         - yarn publish --non-interactive --new-version minor
+        - git push --tags
     - stage: major
       script:
         - yarn publish --non-interactive --new-version major
+        - git push --tags
 
 stages:
   # - name: test
