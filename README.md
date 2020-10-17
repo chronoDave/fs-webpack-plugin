@@ -19,7 +19,6 @@ Currently, it supports:
 yarn add fs-webpack-plugin --dev
 
 // NPM
-
 npm i fs-webpack-plugin --save-dev
 ```
 
