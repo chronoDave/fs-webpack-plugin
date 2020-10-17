@@ -11,16 +11,13 @@ jobs:
         - yarn test
     - stage: patch
       script:
-        - yarn --new-version patch
-        - yarn publish
+        - yarn publish --non-interactive --new-version patch
     - stage: minor
       script:
-        - yarn --new-version minor
-        - yarn publish
+        - yarn publish --non-interactive --new-version minor
     - stage: major
       script:
-        - yarn --new-version major
-        - yarn publish
+        - yarn publish --non-interactive --new-version major
 
 stages:
   - name: patch
