@@ -8,6 +8,6 @@ ORIGIN+=$1
 ORIGIN+=@github.com/
 ORIGIN+=$REPOSITORY
 
-# yarn publish --non-interactive --new-version $3
+yarn publish --non-interactive --new-version
 
 git push $ORIGIN master --tags
