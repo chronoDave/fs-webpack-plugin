@@ -1,6 +1,6 @@
 {
   "name": "fs-webpack-plugin",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "repository": "https://github.com/chronoDave/fs-webpack-plugin.git",
   "description": "File system methods bundled in a webpack plugin package",
   "keywords": [
@@ -10,7 +10,9 @@
     "delete",
     "clean"
   ],
-  "files": ["index.js"],
+  "files": [
+    "index.js"
+  ],
   "main": "index.js",
   "author": "Chronocide",
   "license": "MIT",
