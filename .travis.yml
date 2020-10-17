@@ -26,7 +26,7 @@ jobs:
         - git push --tags
 
 stages:
-  # - name: test
+  - name: test
   - name: patch
     if: branch = master AND commit_message =~ /(ci|docs|fix|deps|patch)/
   - name: minor
