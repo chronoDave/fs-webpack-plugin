@@ -12,6 +12,19 @@ Currently, it supports:
  - `copy`
  - `delete`
 
+## Installation
+
+```JS
+// Yarn
+yarn add fs-webpack-plugin --dev
+
+// NPM
+
+npm i fs-webpack-plugin --save-dev
+```
+
+_Note_: `fs-webpack-plugin` requires Node `>=12.10.0`.
+
 ## Why?
 
 Both `copy-webpack-plugin` and `clean-webpack-plugin` have far too many depedencies if you ask me. As these are both `fs` related packages, why not bundle them together (and minify the amount of depedencies in the process)?
@@ -27,15 +40,13 @@ module.exports = {
   plugins: [
     new FsWebpackPlugin([{
       type: 'delete',
-      files: 'build/**/*',
-      hooks: ['beforeRun']
+      files: 'build/**/*'
     }, {
       type: 'copy',
-      files: 'assets/**/*',
+      files: '**/*',
       to: 'build',
-      root: __dirname,
-      hooks: ['beforeRun']
-    }])
+      root: 'assets'
+    }], { verbose: true })
   ]
 }
 ```
@@ -45,7 +56,6 @@ module.exports = {
 `new FsWebpackPlugin(actions, options)` 
 
  - `actions (Action[])` - Array of action objects
- - `options (Object)` - Options
  - `options.verbose (Boolean)` - Enable logging (default `false`)
  - `options.strict (Boolean)` - Should throw errors instead of logging them (default `false`)
  - `options.dry (Boolean)` - Enable mocking (default `false`). Please note that `options.dry` will not output to console if `options.verbose` is `false`
@@ -57,3 +67,12 @@ module.exports = {
  - `to (String)` - Output directory (used by `copy`)
  - `root (String)` - `files` glob root, defaults to `process.cwd()`
  - `hooks (String[])` - Webpack [hooks](https://webpack.js.org/api/compiler-hooks/#hooks) to run action on, defaults to `['beforeRun']`
+
+
+## License
+
+[MIT](./LICENSE)
+
+## Donating
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y41E23T)
