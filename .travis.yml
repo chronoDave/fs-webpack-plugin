@@ -7,17 +7,13 @@ git:
 jobs:
   include:
     - stage: test
-      script:
-        - yarn test
+      script: yarn test
     - stage: patch
-      script:
-        - yarn publish --non-interactive --new-version patch
+      script: ./publish.sh patch
     - stage: minor
-      script:
-        - yarn publish --non-interactive --new-version minor
+      script: ./publish.sh minor
     - stage: major
-      script:
-        - yarn publish --non-interactive --new-version major
+      script: ./publish.sh major
 
 stages:
   - name: test
