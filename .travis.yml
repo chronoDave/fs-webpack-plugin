@@ -24,11 +24,11 @@ jobs:
 stages:
   - name: test
   - name: patch
-    if: branch = master AND commit_message =~ /(ci|docs|fix|deps|patch)/
+    if: branch = master AND commit_message =~ /(ci|docs|fix|deps|patch):/
   - name: minor
-    if: branch = master AND commit_message =~ /(feat|perf|refactor|minor)/
+    if: branch = master AND commit_message =~ /(feat|perf|refactor|minor):/
   - name: major
-    if: branch = master AND commit_message =~ /(breaking|update)/
+    if: branch = master AND commit_message =~ /(breaking|update):/
 
 after_success:
   - wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/shell/discord.sh
