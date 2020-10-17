@@ -10,16 +10,19 @@ jobs:
       script:
         - yarn test
     - stage: patch
+      env:
+        NODE_AUTH_TOKEN: $NPM_TOKEN
       script:
-        - yarn config set _authToken $NPM_TOKEN
         - yarn publish --non-interactive --new-version patch
     - stage: minor
+      env:
+        NODE_AUTH_TOKEN: $NPM_TOKEN
       script:
-        - yarn config set _authToken $NPM_TOKEN
         - yarn publish --non-interactive --new-version minor
     - stage: major
+      env:
+        NODE_AUTH_TOKEN: $NPM_TOKEN
       script:
-        - yarn config set _authToken $NPM_TOKEN
         - yarn publish --non-interactive --new-version major
 
 stages:
