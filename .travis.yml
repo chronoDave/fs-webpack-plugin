@@ -10,16 +10,23 @@ jobs:
       script:
         - yarn test
     - stage: patch
+      deploy:
+        api_key: $NPM_TOKEN
       script:
         - yarn publish --non-interactive --new-version patch
     - stage: minor
+      deploy:
+        api_key: $NPM_TOKEN
       script:
         - yarn publish --non-interactive --new-version minor
     - stage: major
+      deploy:
+        api_key: $NPM_TOKEN
       script:
         - yarn publish --non-interactive --new-version major
 
 stages:
+  - name: test
   - name: patch
     if: branch = master AND commit_message =~ /(ci|docs|fix|deps|patch)/
   - name: minor
