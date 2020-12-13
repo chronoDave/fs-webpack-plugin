@@ -1,5 +1,7 @@
 name: Test
 on: [push, pull_request]
+env:
+  WEBHOOK_URL: ${{secrets.WEBHOOK_URL}}
 jobs:
   ci:
     name: Test
@@ -27,3 +29,15 @@ jobs:
         run: yarn --frozen-lockfile
       - name: Test
         run: yarn test
+      - name: On success
+        if: ${{success()}}
+        run: |
+          wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/webhooks/discord_github.sh
+          chmod +x discord_github.sh
+          ./discord_github.sh success
+      - name: On error
+        if: ${{failure()}}
+        run: |
+          wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/webhooks/discord_github.sh
+          chmod +x discord_github.sh
+          ./discord_github.sh failure
