@@ -20,6 +20,9 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install Node
         uses: actions/setup-node@v2.1.3
+        with:
+          node-version: 12
+          check-latest: true
       - name: Install Packages
         run: yarn --frozen-lockfile
       - name: Test
