@@ -3,7 +3,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
 [![npm](https://img.shields.io/npm/v/fs-webpack-plugin?label=npm)](https://www.npmjs.com/package/fs-webpack-plugin)
 [![Leaf-DB](https://img.shields.io/bundlephobia/minzip/fs-webpack-plugin@latest.svg)](https://bundlephobia.com/result?p=fs-webpack-plugin@latest)
-[![Build Status](https://travis-ci.com/chronoDave/fs-webpack-plugin.svg?branch=master)](https://travis-ci.com/chronoDave/fs-webpack-plugin)
 
 `fs-webpack-plugin` adds file system methods in a webpack plugin package.
 
