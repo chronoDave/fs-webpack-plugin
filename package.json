@@ -1,6 +1,6 @@
 {
   "name": "fs-webpack-plugin",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "repository": "https://github.com/chronoDave/fs-webpack-plugin.git",
   "description": "File system methods bundled in a webpack plugin package",
   "keywords": [
