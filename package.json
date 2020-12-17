@@ -23,7 +23,7 @@
     "test": "tape index.test.js"
   },
   "dependencies": {
-    "fast-glob": "^3.2.4"
+    "@chronocide/fs-walk": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^7.7.0",

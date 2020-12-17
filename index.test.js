@@ -1,16 +1,41 @@
-const tape = require('tape');
 const fs = require('fs');
 const path = require('path');
+
+const tape = require('tape');
 const webpack = require('webpack');
 
 const FsWebpackPlugin = require('./index');
 
-const root = path.resolve(__dirname, 'test');
+const testFolder = '_test';
+const outputFolder = '_dist';
+const testFolderAbsolute = path.resolve(__dirname, testFolder);
+const outputFolderAbsolute = path.resolve(__dirname, outputFolder);
+
 const files = [
-  path.resolve(root, 'test_1.txt'),
-  path.resolve(root, 'nested/test_2.txt'),
-  path.resolve(root, 'deeply/nested/test_3.txt')
-];
+  testFolder,
+  path.join(testFolder, 'nested'),
+  path.join(testFolder, 'deeply/nested')
+].reduce((acc, relative, i) => {
+  const name = `${i}.txt`;
+
+  return ({
+    ...acc,
+    [i]: {
+      name,
+      relative: path.join(relative, name),
+      absolute: path.resolve(__dirname, relative, name)
+    }
+  });
+}, {});
+
+const createTestFiles = () => {
+  for (let i = 0, v = Object.values(files); i < v.length; i += 1) {
+    const file = v[i];
+
+    fs.mkdirSync(path.dirname(file.absolute), { recursive: true });
+    fs.writeFileSync(file.absolute, i);
+  }
+};
 
 const promiseWebpack = options => new Promise((resolve, reject) => (
   webpack(options, (err, stats) => {
@@ -19,186 +44,211 @@ const promiseWebpack = options => new Promise((resolve, reject) => (
   })
 ));
 
-const createTestFiles = () => {
-  for (let i = 0; i < files.length; i += 1) {
-    fs.mkdirSync(files[i].split(path.sep).slice(0, -1).join(path.sep), { recursive: true });
-    fs.writeFileSync(files[i], i);
-  }
-};
-
 /** Constructor */
-tape('Should not throw with no parameters', async t => {
+tape('[constructor] should not throw if parameters are not assigned', async t => {
   try {
     await promiseWebpack({ plugins: [new FsWebpackPlugin()] });
-    t.end();
   } catch (err) {
-    t.fail(err.message);
+    t.fail(err);
   }
+
+  t.end();
 });
 
-tape('Should throw if strict is enabled', async t => {
+tape('[constructor] should throw if `strict` is true', async t => {
   try {
     await promiseWebpack({ plugins: [new FsWebpackPlugin('fail', { strict: true })] });
-    t.fail('Expected error');
+    t.fail(new Error('Expected error'));
   } catch (err) {
-    t.end();
+    // Success
   }
+
+  t.end();
 });
 
 /** Delete */
-tape('Should delete files', async t => {
-  try {
-    createTestFiles();
-
-    await promiseWebpack({
-      plugins: [new FsWebpackPlugin([{ type: 'delete', root: 'test' }])]
-    });
-
-    for (let i = 0; i < files.length; i += 1) t.false(fs.existsSync(files[i]));
-  } catch (err) {
-    t.fail(err.message);
-  }
-
-  fs.rmdirSync(root, { recursive: true });
-
-  t.end();
-});
-
-tape('Should mock delete files if `dry` is true', async t => {
-  try {
-    createTestFiles();
-
-    await promiseWebpack({
-      plugins: [new FsWebpackPlugin(
-        [{ type: 'delete', root: 'test' }],
-        { dry: true }
-      )]
-    });
-
-    for (let i = 0; i < files.length; i += 1) t.true(fs.existsSync(files[i]));
-  } catch (err) {
-    t.fail(err.message);
-  }
-
-  fs.rmdirSync(root, { recursive: true });
-
-  t.end();
-});
-
-tape('Should delete folders', async t => {
+tape('[delete] should delete directory, recursively', async t => {
   try {
     createTestFiles();
 
     await promiseWebpack({
       plugins: [new FsWebpackPlugin([{
         type: 'delete',
-        root: 'test',
-        files: false
-      }])]
+        files: testFolder,
+        root: __dirname
+      }], { strict: true })]
     });
 
-    t.false(fs.existsSync('test'));
+    t.false(fs.existsSync(path.resolve(__dirname, testFolder)));
   } catch (err) {
-    t.fail(err.message);
+    t.fail(err);
   }
 
-  fs.rmdirSync(root, { recursive: true });
+  fs.rmdirSync(testFolderAbsolute, { recursive: true });
 
   t.end();
 });
 
-tape('Should mock delete folders if `dry` is true', async t => {
+tape('[delete] should delete files', async t => {
   try {
     createTestFiles();
 
     await promiseWebpack({
       plugins: [new FsWebpackPlugin([{
         type: 'delete',
-        root: 'test',
-        files: false
-      }], { dry: true })]
+        files: [files[1].relative],
+        root: __dirname
+      }], { strict: true })]
     });
 
-    t.true(fs.existsSync('test'));
+    t.true(fs.existsSync(files[0].absolute));
+    t.false(fs.existsSync(files[1].absolute));
+    t.true(fs.existsSync(files[2].absolute));
   } catch (err) {
-    t.fail(err.message);
+    t.fail(err);
   }
 
-  fs.rmdirSync(root, { recursive: true });
+  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+
+  t.end();
+});
+
+tape('[delete] should not delete if `dry` is true', async t => {
+  try {
+    createTestFiles();
+
+    await promiseWebpack({
+      plugins: [new FsWebpackPlugin([{
+        type: 'delete',
+        files: ['_test'],
+        root: __dirname
+      }], { dry: true, strict: true })]
+    });
+
+    t.true(fs.existsSync(testFolderAbsolute));
+  } catch (err) {
+    t.fail(err);
+  }
+
+  fs.rmdirSync(testFolderAbsolute, { recursive: true });
 
   t.end();
 });
 
 /** Copy */
-tape('Should copy files', async t => {
+tape('[copy] should copy file', async t => {
   try {
     createTestFiles();
 
     await promiseWebpack({
       plugins: [new FsWebpackPlugin([{
         type: 'copy',
-        root: __dirname,
-        files: 'test/**/*',
-        to: 'test/copy'
-      }])]
+        files: {
+          from: files[1].relative,
+          to: outputFolder
+        },
+        root: __dirname
+      }], { strict: true })]
     });
 
-    for (let i = 0; i < files.length; i += 1) {
-      t.true(fs.existsSync(path.resolve(root, 'copy', path.normalize(files[i]).split(path.sep).pop())));
-    }
+    t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[0].relative)));
+    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[1].relative)));
+    t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[2].relative)));
   } catch (err) {
-    t.fail(err.message);
+    t.fail(err);
   }
 
-  fs.rmdirSync(root, { recursive: true });
+  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
 
   t.end();
 });
 
-tape('Should mock copy files if `dry` is true', async t => {
+tape('[copy] should copy directory, recursively', async t => {
   try {
     createTestFiles();
 
     await promiseWebpack({
       plugins: [new FsWebpackPlugin([{
         type: 'copy',
-        files: 'test/**/*',
-        to: 'test/copy'
-      }], { dry: true })]
+        files: {
+          from: testFolder,
+          to: outputFolder
+        },
+        root: __dirname
+      }], { strict: true })]
     });
 
-    t.false(fs.existsSync(path.resolve(root, 'copy')));
+    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[0].relative)));
+    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[1].relative)));
+    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[2].relative)));
   } catch (err) {
-    t.fail(err.message);
+    t.fail(err);
   }
 
-  fs.rmdirSync(root, { recursive: true });
+  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
+
+  t.end();
+});
+
+tape('[copy] should not copy directory, recursively, if `dry` is true', async t => {
+  try {
+    createTestFiles();
+
+    await promiseWebpack({
+      plugins: [new FsWebpackPlugin([{
+        type: 'copy',
+        files: {
+          from: testFolder,
+          to: outputFolder
+        },
+        root: __dirname
+      }], { strict: true, dry: true })]
+    });
+
+    t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[0].relative)));
+    t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[1].relative)));
+    t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[2].relative)));
+  } catch (err) {
+    t.fail(err);
+  }
+
+  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
 
   t.end();
 });
 
 /** Chain */
-tape('Should chain multiple commands', async t => {
+tape('[chain] should chain commands', async t => {
   try {
     createTestFiles();
 
     await promiseWebpack({
       plugins: [new FsWebpackPlugin([{
-        type: 'copy',
-        files: 'test/**/*',
-        to: 'test/copy'
-      }, {
         type: 'delete',
-        files: 'test/**/*'
-      }])]
+        files: files[1].relative,
+        root: __dirname
+      }, {
+        type: 'copy',
+        files: {
+          from: testFolder,
+          to: outputFolder
+        },
+        root: __dirname
+      }], { strict: true })]
     });
 
-    for (let i = 0; i < files.length; i += 1) t.false(fs.existsSync(files[i]));
+    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[0].relative)));
+    t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[1].relative)));
+    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[2].relative)));
   } catch (err) {
-    t.fail(err.message);
+    t.fail(err);
   }
 
-  fs.rmdirSync(root, { recursive: true });
+  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
 
   t.end();
 });
