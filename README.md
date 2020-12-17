@@ -7,8 +7,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
 [![npm](https://img.shields.io/npm/v/fs-webpack-plugin?label=npm)](https://www.npmjs.com/package/fs-webpack-plugin)
-[![Leaf-DB](https://img.shields.io/bundlephobia/minzip/fs-webpack-plugin@latest.svg)](https://bundlephobia.com/result?p=fs-webpack-plugin@latest)
-![Test](https://github.com/chronoDave/fs-webpack-plugin/workflows/Test/badge.svg?branch=master)
+[![fs-webpack-plugin](https://img.shields.io/bundlephobia/minzip/fs-webpack-plugin@latest.svg)](https://bundlephobia.com/result?p=fs-webpack-plugin@latest)
+![fs-webpack-plugin](https://github.com/chronoDave/fs-webpack-plugin/workflows/fs-webpack-plugin/badge.svg?branch=master)
 
 # fs-webpack-plugin
 
