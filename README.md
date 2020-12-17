@@ -55,9 +55,9 @@ module.exports = {
       type: 'copy',
       files: { from: 'assets', to: 'build' }
     }, {
-      // Copy file `assets/image.png` to `build/assets/image.png`
+      // Copy file `assets/image.png` to `build/image.png`
       type: 'copy',
-      files: { from: 'assets/image.png', to: 'build/assets/image.png' }
+      files: { from: 'assets/image.png', to: 'build' }
     }])
   ]
 }

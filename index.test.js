@@ -152,7 +152,7 @@ tape('[copy] should copy file', async t => {
     });
 
     t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[0].relative)));
-    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[1].relative)));
+    t.true(fs.existsSync(path.resolve(outputFolderAbsolute, files[1].name)));
     t.false(fs.existsSync(path.resolve(outputFolderAbsolute, files[2].relative)));
   } catch (err) {
     t.fail(err);

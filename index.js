@@ -89,28 +89,34 @@ module.exports = class FsWebpackPlugin {
   copy(files, root) {
     for (let i = 0; i < files.length; i += 1) {
       const { from, to } = files[i];
-      const stack = [];
-
       const fromAbs = path.resolve(root, from);
+
       if (!fs.existsSync(fromAbs)) {
         // Invalid file or directory
         throw new Error(`File or folder does not exist: ${fromAbs}`);
       } else if (fs.lstatSync(fromAbs).isDirectory()) {
-        stack.push(...walk(fromAbs));
-      } else {
-        stack.push(fromAbs);
-      }
+        // Copy directory
+        for (let j = 0, stack = walk(fromAbs); j < stack.length; j += 1) {
+          const newFile = path.normalize(path.join(
+            root,
+            to,
+            stack[j].replace(root, '')
+          ));
 
-      for (let j = 0; j < stack.length; j += 1) {
-        const newFile = path.normalize(path.join(
-          root,
-          to,
-          stack[j].replace(root, '')
-        ));
+          if (!this.dry) {
+            fs.mkdirSync(path.dirname(newFile), { recursive: true });
+            fs.copyFileSync(stack[j], newFile);
+          }
+          if (this.verbose) this.logger.info(`Copied file: ${stack[j]} => ${newFile}`);
+        }
+      } else {
+        // Copy file
+        const file = from.split(path.sep).pop();
+        const newFile = path.resolve(root, to, file);
 
         if (!this.dry) {
           fs.mkdirSync(path.dirname(newFile), { recursive: true });
-          fs.copyFileSync(stack[j], newFile);
+          fs.copyFileSync(fromAbs, newFile);
         }
         if (this.verbose) this.logger.info(`Copied file: ${fromAbs} => ${newFile}`);
       }
