@@ -111,8 +111,11 @@ module.exports = class FsWebpackPlugin {
         }
       } else {
         // Copy file
-        const file = from.split(path.sep).pop();
-        const newFile = path.resolve(root, to, file);
+        const newFile = path.resolve(path.join(
+          root,
+          to,
+          path.normalize(from).split(path.sep).pop()
+        ));
 
         if (!this.dry) {
           fs.mkdirSync(path.dirname(newFile), { recursive: true });
