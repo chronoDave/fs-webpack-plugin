@@ -23,7 +23,7 @@
     "test": "tape index.test.js"
   },
   "dependencies": {
-    "@chronocide/fs-walk": "^1.0.0"
+    "@chronocide/fs-walk": "^1.2.1"
   },
   "devDependencies": {
     "eslint": "^7.7.0",

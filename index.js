@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const walk = require('@chronocide/fs-walk').default;
+const walk = require('@chronocide/fs-walk');
 
 module.exports = class FsWebpackPlugin {
   /**

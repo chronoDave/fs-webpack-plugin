@@ -3,16 +3,25 @@
     <img width="200" height="200"
       src="https://webpack.js.org/assets/icon-square-big.svg">
   </a>
+
+  <h1>fs-webpack-plugin</h1>
+  <p>File system methods bundled in a webpack plugin package</p>
 </div>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
-[![npm](https://img.shields.io/npm/v/fs-webpack-plugin?label=npm)](https://www.npmjs.com/package/fs-webpack-plugin)
-[![fs-webpack-plugin](https://img.shields.io/bundlephobia/minzip/fs-webpack-plugin@3.0.0.svg)](https://bundlephobia.com/result?p=fs-webpack-plugin@3.0.0)
-![fs-webpack-plugin](https://github.com/chronoDave/fs-webpack-plugin/workflows/fs-webpack-plugin/badge.svg?branch=master)
-
-# fs-webpack-plugin
-
-Copies and deletes both files and directories.
+<div align="center">
+  <a href="/LICENSE">
+    <img alt="license MIT" src="https://img.shields.io/badge/License-MIT-blue.svg">
+  </a>
+  <a href="https://www.npmjs.com/package/fs-webpack-plugin">
+    <img alt="npm" src="https://img.shields.io/npm/v/fs-webpack-plugin?label=npm" />
+  </a>
+  <a href="https://bundlephobia.com/result?p=fs-webpack-plugin@3.0.0">
+    <img alt="minzip size" src="https://img.shields.io/bundlephobia/minzip/fs-webpack-plugin@3.0.0.svg">
+  </a>
+  <a href="https://github.com/chronoDave/fs-webpack-plugin/workflows/ci">
+    <img alt="ci" src="https://github.com/chronoDave/fs-webpack-plugin/workflows/ci/badge.svg?branch=master">
+  </a>
+</div>
 
 ## Why?
 
