@@ -1,7 +1,15 @@
 name: ci
 on: [push, pull_request]
-env:
-  WEBHOOK_URL: ${{secrets.WEBHOOK_URL}}
+      - name: Discord Webhook (Success)
+        if: ${{success()}}
+        run: |
+          wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/webhooks/github_discord.js
+          node ./github_discord.js ${{secrets.WEBHOOK_URL}} success
+      - name: Discord Webhook (Failure)
+        if: ${{failure()}}
+        run: |
+          wget https://raw.githubusercontent.com/chronoDave/user-scripts/master/webhooks/github_discord.js
+          node ./github_discord.js ${{secrets.WEBHOOK_URL}} error
 jobs:
   ci:
     name: Test
