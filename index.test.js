@@ -33,7 +33,7 @@ const createTestFiles = () => {
     const file = v[i];
 
     fs.mkdirSync(path.dirname(file.absolute), { recursive: true });
-    fs.writeFileSync(file.absolute, i);
+    fs.writeFileSync(file.absolute, `${i}`);
   }
 };
 
