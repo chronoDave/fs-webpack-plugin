@@ -72,7 +72,7 @@ module.exports = class FsWebpackPlugin {
         throw new Error(`File or folder does not exist: ${file}`);
       } else if (fs.lstatSync(file).isDirectory()) {
         // Path is directory
-        if (!this.dry) fs.rmdirSync(file, { recursive: true });
+        if (!this.dry) fs.rmSync(file, { recursive: true });
         if (this.verbose) this.logger.info(`Removed folder: ${files}`);
       } else {
         // Path is file
