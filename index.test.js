@@ -84,7 +84,7 @@ tape('[delete] should delete directory, recursively', async t => {
     t.fail(err);
   }
 
-  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+  fs.rmSync(testFolderAbsolute, { force: true, recursive: true });
 
   t.end();
 });
@@ -108,7 +108,7 @@ tape('[delete] should delete files', async t => {
     t.fail(err);
   }
 
-  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+  fs.rmSync(testFolderAbsolute, { force: true, recursive: true });
 
   t.end();
 });
@@ -130,7 +130,7 @@ tape('[delete] should not delete if `dry` is true', async t => {
     t.fail(err);
   }
 
-  fs.rmdirSync(testFolderAbsolute, { recursive: true });
+  fs.rmSync(testFolderAbsolute, { force: true, recursive: true });
 
   t.end();
 });
@@ -158,8 +158,8 @@ tape('[copy] should copy file', async t => {
     t.fail(err);
   }
 
-  fs.rmdirSync(testFolderAbsolute, { recursive: true });
-  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
+  fs.rmSync(testFolderAbsolute, { force: true, recursive: true });
+  fs.rmSync(outputFolderAbsolute, { force: true, recursive: true });
 
   t.end();
 });
@@ -186,8 +186,8 @@ tape('[copy] should copy directory, recursively', async t => {
     t.fail(err);
   }
 
-  fs.rmdirSync(testFolderAbsolute, { recursive: true });
-  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
+  fs.rmSync(testFolderAbsolute, { force: true, recursive: true });
+  fs.rmSync(outputFolderAbsolute, { force: true, recursive: true });
 
   t.end();
 });
@@ -214,8 +214,8 @@ tape('[copy] should not copy directory, recursively, if `dry` is true', async t 
     t.fail(err);
   }
 
-  fs.rmdirSync(testFolderAbsolute, { recursive: true });
-  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
+  fs.rmSync(testFolderAbsolute, { force: true, recursive: true });
+  fs.rmSync(outputFolderAbsolute, { force: true, recursive: true });
 
   t.end();
 });
@@ -247,8 +247,8 @@ tape('[chain] should chain commands', async t => {
     t.fail(err);
   }
 
-  fs.rmdirSync(testFolderAbsolute, { recursive: true });
-  fs.rmdirSync(outputFolderAbsolute, { recursive: true });
+  fs.rmSync(testFolderAbsolute, { force: true, recursive: true });
+  fs.rmSync(outputFolderAbsolute, { force: true, recursive: true });
 
   t.end();
 });

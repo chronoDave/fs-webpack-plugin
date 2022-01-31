@@ -17,7 +17,7 @@
   "author": "Chronocide",
   "license": "MIT",
   "engines": {
-    "node": ">=12.10.0"
+    "node": ">=14.14.0"
   },
   "scripts": {
     "test": "tape index.test.js"

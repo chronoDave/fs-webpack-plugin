@@ -3,6 +3,11 @@ const path = require('path');
 
 const walk = require('@chronocide/fs-walk');
 
+const toAbsolute = (p, root = process.cwd()) => {
+  if (path.isAbsolute(p)) return p;
+  return path.resolve(root, p);
+};
+
 module.exports = class FsWebpackPlugin {
   /**
    * @param {object[]} actions
@@ -64,22 +69,12 @@ module.exports = class FsWebpackPlugin {
    * @param {string} root - Root folder
    */
   delete(files, root) {
-    for (let i = 0; i < files.length; i += 1) {
-      const file = path.resolve(root, files[i]);
-
-      if (!fs.existsSync(file)) {
-        // Invalid file or directory
-        throw new Error(`File or folder does not exist: ${file}`);
-      } else if (fs.lstatSync(file).isDirectory()) {
-        // Path is directory
-        if (!this.dry) fs.rmdirSync(file, { recursive: true });
+    files
+      .map(file => toAbsolute(file, root))
+      .forEach(file => {
+        if (!this.dry) fs.rmSync(file, { force: true, recursive: true });
         if (this.verbose) this.logger.info(`Removed folder: ${files}`);
-      } else {
-        // Path is file
-        if (!this.dry) fs.unlinkSync(file);
-        if (this.verbose) this.logger.info(`Removed file: ${files}`);
-      }
-    }
+      });
   }
 
   /**
