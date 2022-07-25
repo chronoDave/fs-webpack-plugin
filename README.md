@@ -5,13 +5,11 @@
   </a>
 
   <h1>fs-webpack-plugin</h1>
-  <p>File system methods bundled in a webpack plugin package</p>
+  <p>Native file system methods bundled in a webpack plugin package</p>
 </div>
 
 <div align="center">
-  <a href="/LICENSE">
-    <img alt="license MIT" src="https://img.shields.io/badge/License-MIT-blue.svg">
-  </a>
+  <img alt="node-current" src="https://img.shields.io/node/v/fs-webpack-plugin">
   <a href="https://www.npmjs.com/package/fs-webpack-plugin">
     <img alt="npm" src="https://img.shields.io/npm/v/fs-webpack-plugin?label=npm" />
   </a>
@@ -21,13 +19,16 @@
   <a href="https://github.com/chronoDave/fs-webpack-plugin/workflows/ci">
     <img alt="ci" src="https://github.com/chronoDave/fs-webpack-plugin/workflows/ci/badge.svg?branch=master">
   </a>
+  <a href="/LICENSE">
+    <img alt="license MIT" src="https://img.shields.io/badge/License-MIT-blue.svg">
+  </a>
 </div>
 
 ## Why?
 
-Both `copy-webpack-plugin` and `clean-webpack-plugin` are very large packages for the functionality they provide (`91.3kb` and `15.3kb` minzipped respectively).
+Both `copy-webpack-plugin` and `clean-webpack-plugin` recreate existing native functionality so why not use those?
 
-Both of these packages rely on `fs`, so why not bundle them together whilst also minifiying the bundle size?
+<b>Note: </b> `clean` can be replaced with Webpack's [`output.clean`](https://webpack.js.org/configuration/output/#outputclean)
 
 ## Usage
 
@@ -41,16 +42,16 @@ module.exports = {
     new FsWebpackPlugin([{
       // Delete folder `build` recursively
       type: 'delete',
-      files: 'build'
+      files: ['build'] // process.cwd() + build
     }, {
       // Delete file `build/index.test.js`
       type: 'delete',
-      files: 'build/index.test.js'
+      files: ['build/index.test.js'] // process.cwd() + build/index.test.js
     }, {
       // Delete file `build/index.test.js`,
       type: 'delete',
-      files: 'index.test.js',
-      root: path.resolve(__dirname, 'build') // [!] Must be absolute
+      files: ['index.test.js'],
+      root: path.resolve(__dirname, 'build') // Must be absolute
     }, {
       // Delete file `build/index.test.js` and folder `build/test`
       type: 'delete',
@@ -62,11 +63,11 @@ module.exports = {
     }, {
       // Copy folder `assets` recursively to `build/assets`
       type: 'copy',
-      files: { from: 'assets', to: 'build' }
+      files: [{ from: 'assets', to: 'build' }]
     }, {
       // Copy file `assets/image.png` to `build/image.png`
       type: 'copy',
-      files: { from: 'assets/image.png', to: 'build' }
+      files: [{ from: 'assets/image.png', to: 'build' }]
     }])
   ]
 }
@@ -77,13 +78,13 @@ module.exports = {
 `new FsWebpackPlugin(actions, options)` 
 
  - `actions (Action[])` - Array of action objects
- - `options.verbose (Boolean)` - Enable logging (default `false`)
+ - `options.verbose (Boolean)` - Enable logging (default `true`)
  - `options.strict (Boolean)` - Should throw errors instead of logging them (default `false`)
  - `options.dry (Boolean)` - Enable dry run (default `false`). Please note that `options.dry` will not output to console if `options.verbose` is `false`
 
 `Action`
 
  - `type (String)` - Action type, must be one of `copy`, `delete`
- - `files (String|String[]|{ from: String, to: String}|{ from: String, to: String}[]` - File(s) or directory(s) to delete. `copy` only accepts `{ from, to }`. Paths are relative to root
+ - `files (String[]|{ from: String, to: String}[]` - Files or directorys to delete. `copy` only accepts `{ from, to }`. If paths are relative, uses `root`
  - `root (String)` - Absolute path used by `files`, defaults to `process.cwd()`
  - `hooks (String[])` - Webpack [hooks](https://webpack.js.org/api/compiler-hooks/#hooks) to run action on, defaults to `['beforeRun']`

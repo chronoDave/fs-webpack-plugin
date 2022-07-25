@@ -11,19 +11,18 @@
     "clean"
   ],
   "files": [
-    "index.js"
+    "src"
   ],
-  "main": "index.js",
+  "main": "src/plugin.js",
   "author": "Chronocide",
   "license": "MIT",
   "engines": {
-    "node": ">=14.14.0"
+    "node": ">=16.7.0"
   },
   "scripts": {
-    "test": "tape index.test.js"
-  },
-  "dependencies": {
-    "@chronocide/fs-walk": "^1.2.1"
+    "lint": "eslint src test",
+    "lint:fix": "eslint src test --fix",
+    "test": "tape test/**/*.test.js"
   },
   "devDependencies": {
     "eslint": "^7.7.0",

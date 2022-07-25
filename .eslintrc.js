@@ -12,6 +12,13 @@ module.exports = {
     'object-curly-newline': 'off',
     'arrow-parens': ['error', 'as-needed'],
     'no-nested-ternary': 'off',
-    'no-console': 'off'
+    'no-console': 'off',
+    'no-underscore-dangle': 'off',
+    'max-len': ['error', {
+      code: 100,
+      ignoreComments: true,
+      ignoreStrings: true,
+      ignoreTemplateLiterals: true
+    }]
   }
 };

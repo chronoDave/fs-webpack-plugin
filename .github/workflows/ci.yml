@@ -17,6 +17,8 @@ jobs:
           restore-keys: node-
       - name: Install Packages
         run: npm ci
+      - name: Lint
+        run: npm run lint
       - name: Test
         run: npm run test
       - name: Discord Webhook (Success)
